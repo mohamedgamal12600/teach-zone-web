@@ -69,6 +69,9 @@ const icons = {
   bag: '<path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4zM3 6h18M16 10a4 4 0 0 1-8 0"/>',
   minus: '<path d="M5 12h14"/>',
   plus: '<path d="M12 5v14M5 12h14"/>',
+  home: '<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2zM9 22V12h6v10"/>',
+  grid: '<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/>',
+  user: '<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>',
 };
 const icon = (name, filled = false) => `<svg class="ic${filled ? ' f' : ''}" viewBox="0 0 24 24" aria-hidden="true">${icons[name]}</svg>`;
 
@@ -154,7 +157,7 @@ function homeView() {
     return `<section class="w sec"><h1>Shop</h1><p class="empty">${escapeHTML(catalogMessage())}</p><button class="cta" data-act="retry"${state.catalogState === 'loading' ? ' disabled' : ''}>Retry</button></section>`;
   }
   const featured = productById('1') || products[0];
-  return `<section class="w hero"><div><h1>Technology for work, play, and everyday life</h1><p>Browse the live catalog, compare products, and place a cash-on-delivery order.</p><a class="cta" href="#/product/${escapeHTML(featured.id)}">View ${escapeHTML(featured.name)} · ${currency(featured.price)}</a> <button class="cta ghost" data-act="shop">Browse all</button></div><img src="${productImage(featured)}" alt="${escapeHTML(featured.name)}"></section>
+  return `<section class="w hero"><div><h1>Technology for work, play, and everyday life</h1><p>Browse the live catalog, compare products, and place a cash-on-delivery order.</p><div class="hero-act"><a class="cta" href="#/product/${escapeHTML(featured.id)}">View ${escapeHTML(featured.name)} · ${currency(featured.price)}</a> <button class="cta ghost" data-act="shop">Browse all</button></div></div><img src="${productImage(featured)}" alt="${escapeHTML(featured.name)}"></section>
 <section class="w sec"><h2>Shop by category</h2><div class="tiles">${categories().map((category) => {
     const first = products.find((product) => product.category === category);
     const quantity = products.filter((product) => product.category === category).length;
@@ -204,7 +207,46 @@ function accountView() {
   return `<div class="w co"><form class="box" id="form-profile" novalidate><h1>My account</h1><label class="fl">Email<input value="${escapeHTML(state.user?.email || '')}" disabled></label>${field('name', 'Full name', 'text', 'name')}${field('phone', 'Phone', 'tel', 'tel', false)}${messages()}${submitButton('Save changes')}<button type="button" class="cta ghost" data-act="logout">Log out</button></form><section class="box"><h2>My orders</h2>${orders === null ? '<p class="empty">Loading orders…</p>' : orders.length ? orders.map((order) => `<article class="od"><div class="sl"><b>${escapeHTML(orderDate(order))}</b><span class="st2 ${escapeHTML(order.status)}">${escapeHTML(order.status)}</span></div><p>${(Array.isArray(order.items) ? order.items : []).map((item) => `${escapeHTML(item.name)} × ${Number(item.qty)}`).join(', ')}</p><div class="sl"><b>${currency(order.total)}</b>${order.status === 'pending' ? `<button class="add" data-act="cancel" data-id="${escapeHTML(order.id)}">Cancel order</button>` : ''}</div></article>`).join('') : '<p class="empty">No orders yet.</p>'}</section></div>`;
 }
 
-const headerView = () => `<header><div class="w hd"><a class="logo" href="#/">Tech<i>Zone</i></a><nav><a href="#/">Home</a><button data-act="shop">Shop</button><button data-act="saved">Saved (${state.favorites.length})</button></nav>${state.user ? `<a class="lnk" href="#/account">${escapeHTML((state.user.displayName || 'Account').split(' ')[0])}</a><button class="lnk" data-act="logout">Log out</button>` : '<a class="lnk" href="#/login">Log in</a>'}<button class="cb" data-act="drawer" aria-label="Open cart">${icon('bag')}Cart${cartCount() ? `<span class="bd">${cartCount()}</span>` : ''}</button></div></header>`;
+const headerView = () => `<header><div class="w hd"><a class="logo" href="#/">Tech<i>Zone</i></a><nav class="desk-nav"><a href="#/" data-act="home">Home</a><button data-act="shop">Shop</button><button data-act="saved">Saved (${state.favorites.length})</button></nav><div class="hd-right">${state.user ? `<a class="lnk" href="#/account">${escapeHTML((state.user.displayName || 'Account').split(' ')[0])}</a><button class="lnk" data-act="logout">Log out</button>` : '<a class="lnk" href="#/login">Log in</a>'}<button class="cb" data-act="drawer" aria-label="Open cart">${icon('bag')}<span class="cb-txt">Cart</span>${cartCount() ? `<span class="bd">${cartCount()}</span>` : ''}</button></div></div></header>`;
+
+function mobileNavView() {
+  const [page] = route();
+  const isHome = page === 'home' && state.category !== 'Saved';
+  const isSaved = state.category === 'Saved';
+  const isAccount = page === 'account' || page === 'login' || page === 'register' || page === 'reset';
+  const count = cartCount();
+  const favCount = state.favorites.length;
+
+  return `<nav class="mob-nav" aria-label="Mobile navigation">
+    <a href="#/" class="mn-item${isHome ? ' on' : ''}" data-act="home">
+      ${icon('home', isHome)}
+      <span>Home</span>
+    </a>
+    <button class="mn-item" data-act="shop">
+      ${icon('grid')}
+      <span>Shop</span>
+    </button>
+    <button class="mn-item${isSaved ? ' on' : ''}" data-act="saved">
+      <span class="mn-icon-wrap">
+        ${icon('heart', isSaved)}
+        ${favCount ? `<span class="mn-badge">${favCount}</span>` : ''}
+      </span>
+      <span>Saved</span>
+    </button>
+    <button class="mn-item" data-act="drawer" aria-label="Open cart">
+      <span class="mn-icon-wrap">
+        ${icon('bag')}
+        ${count ? `<span class="mn-badge">${count}</span>` : ''}
+      </span>
+      <span>Cart</span>
+    </button>
+    <a href="${state.user ? '#/account' : '#/login'}" class="mn-item${isAccount ? ' on' : ''}">
+      ${icon('user', isAccount)}
+      <span>${state.user ? 'Account' : 'Log in'}</span>
+    </a>
+  </nav>`;
+}
+
 function route() {
   const hash = location.hash || '#/';
   if (hash.startsWith('#/product/')) return ['product', hash.slice('#/product/'.length)];
@@ -239,7 +281,7 @@ function render() {
     account: accountView,
   };
   const body = page === 'product' ? productDetail(id) : (pages[page] || homeView)();
-  root.innerHTML = headerView() + `<main>${body}</main>` + footerView() + drawerView();
+  root.innerHTML = headerView() + `<main id="main-content">${body}</main>` + footerView() + drawerView() + mobileNavView();
   if (page === 'account' && state.user && state.orders === null && !state.loadingOrders) void loadOrders();
 }
 
@@ -395,9 +437,30 @@ document.addEventListener('click', async (event) => {
   const button = event.target.closest('[data-act]');
   if (!button || button.disabled) return;
   const { act, id, value } = button.dataset;
-  if (act === 'category') { state.category = value; render(); toShop(); }
-  else if (act === 'shop') { state.category = 'All'; render(); toShop(); }
-  else if (act === 'saved') { state.category = 'Saved'; render(); toShop(); }
+  if (act === 'home') {
+    state.category = 'All';
+    if (location.hash && location.hash !== '#/' && location.hash !== '#') {
+      location.hash = '#/';
+    } else {
+      render();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  } else if (act === 'category') {
+    state.category = value;
+    if (location.hash && location.hash !== '#/' && location.hash !== '#') location.hash = '#/';
+    else render();
+    toShop();
+  } else if (act === 'shop') {
+    state.category = 'All';
+    if (location.hash && location.hash !== '#/' && location.hash !== '#') location.hash = '#/';
+    else render();
+    toShop();
+  } else if (act === 'saved') {
+    state.category = 'Saved';
+    if (location.hash && location.hash !== '#/' && location.hash !== '#') location.hash = '#/';
+    else render();
+    toShop();
+  }
   else if (act === 'retry') { void loadProducts(); }
   else if (act === 'favorite') {
     event.preventDefault();
