@@ -72,6 +72,7 @@ const icons = {
   home: '<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2zM9 22V12h6v10"/>',
   grid: '<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/>',
   user: '<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>',
+  back: '<path d="M15 18l-6-6 6-6"/>',
 };
 const icon = (name, filled = false) => `<svg class="ic${filled ? ' f' : ''}" viewBox="0 0 24 24" aria-hidden="true">${icons[name]}</svg>`;
 
@@ -141,7 +142,7 @@ const favoriteButton = (product) => {
   const saved = state.favorites.includes(product.id);
   return `<button class="hb${saved ? ' on' : ''}" data-act="favorite" data-id="${escapeHTML(product.id)}" aria-label="${saved ? 'Remove' : 'Save'} ${escapeHTML(product.name)}">${icon('heart', saved)}</button>`;
 };
-const productCard = (product) => `<article class="pc">${favoriteButton(product)}<a class="pi" href="#/product/${escapeHTML(product.id)}"><img src="${productImage(product)}" alt="${escapeHTML(product.name)}" loading="lazy"></a><div class="pb"><small>${escapeHTML(product.brand)} · ${escapeHTML(product.category)}</small><h3><a href="#/product/${escapeHTML(product.id)}">${escapeHTML(product.name)}</a></h3><div class="pr"><b>${currency(product.price)}</b></div><button class="add" data-act="add" data-id="${escapeHTML(product.id)}">${icon('bag')}Add to cart</button></div></article>`;
+const productCard = (product) => `<article class="pc" data-act="view-product" data-id="${escapeHTML(product.id)}">${favoriteButton(product)}<div class="pi"><img src="${productImage(product)}" alt="${escapeHTML(product.name)}" loading="lazy"></div><div class="pb"><small>${escapeHTML(product.brand)} · ${escapeHTML(product.category)}</small><h3><a href="#/product/${escapeHTML(product.id)}" data-act="view-product" data-id="${escapeHTML(product.id)}">${escapeHTML(product.name)}</a></h3><div class="pr"><b>${currency(product.price)}</b></div><button class="add" data-act="add" data-id="${escapeHTML(product.id)}">${icon('bag')}Add to cart</button></div></article>`;
 
 function catalogMessage() {
   if (state.catalogState === 'loading') return 'Loading the live catalog…';
@@ -157,7 +158,7 @@ function homeView() {
     return `<section class="w sec"><h1>Shop</h1><p class="empty">${escapeHTML(catalogMessage())}</p><button class="cta" data-act="retry"${state.catalogState === 'loading' ? ' disabled' : ''}>Retry</button></section>`;
   }
   const featured = productById('1') || products[0];
-  return `<section class="w hero"><div><h1>Technology for work, play, and everyday life</h1><p>Browse the live catalog, compare products, and place a cash-on-delivery order.</p><div class="hero-act"><a class="cta" href="#/product/${escapeHTML(featured.id)}">View ${escapeHTML(featured.name)} · ${currency(featured.price)}</a> <button class="cta ghost" data-act="shop">Browse all</button></div></div><img src="${productImage(featured)}" alt="${escapeHTML(featured.name)}"></section>
+  return `<section class="w hero"><div><h1>Technology for work, play, and everyday life</h1><p>Browse the live catalog, compare products, and place a cash-on-delivery order.</p><div class="hero-act"><a class="cta" href="#/product/${escapeHTML(featured.id)}" data-act="view-product" data-id="${escapeHTML(featured.id)}">View ${escapeHTML(featured.name)} · ${currency(featured.price)}</a> <button class="cta ghost" data-act="shop">Browse all</button></div></div><img src="${productImage(featured)}" alt="${escapeHTML(featured.name)}"></section>
 <section class="w sec"><h2>Shop by category</h2><div class="tiles">${categories().map((category) => {
     const first = products.find((product) => product.category === category);
     const quantity = products.filter((product) => product.category === category).length;
@@ -167,13 +168,76 @@ function homeView() {
 }
 function productDetail(id) {
   const product = productById(id);
-  if (!product) return `<section class="w sec"><h1>Product not found</h1><p class="empty"><a href="#/">Return to the shop</a></p></section>`;
+  if (!product) return `<section class="w sec"><h1>Product not found</h1><p class="empty"><a href="#/" data-act="shop">Return to the shop</a></p></section>`;
   const brandUrl = Object.hasOwn(brandLinks, product.brand) ? brandLinks[product.brand] : null;
   const brand = brandUrl
     ? `<a class="bl" href="${brandUrl}" target="_blank" rel="noopener noreferrer">${escapeHTML(product.brand)} website</a>`
     : escapeHTML(product.brand);
   const saved = state.favorites.includes(product.id);
-  return `<div class="w"><div class="bc"><a href="#/">Home</a> / ${escapeHTML(product.category)} / ${escapeHTML(product.name)}</div><div class="pd"><div class="pm"><img src="${productImage(product)}" alt="${escapeHTML(product.name)}"></div><div><small style="color:var(--t2)">${escapeHTML(product.brand)} · ${escapeHTML(product.category)}</small><h1>${escapeHTML(product.name)}</h1><div class="big"><b>${currency(product.price)}</b></div><p class="lb">Brand: ${brand}</p><div class="row"><div class="q"><button data-act="quantity-down" aria-label="Less">${icon('minus')}</button><em>${state.quantity}</em><button data-act="quantity-up" aria-label="More">${icon('plus')}</button></div><button class="cta" data-act="add-quantity" data-id="${escapeHTML(product.id)}">${icon('bag')}Add to cart</button><button class="cta ghost" data-act="favorite" data-id="${escapeHTML(product.id)}">${icon('heart', saved)}${saved ? 'Saved' : 'Save'}</button></div></div></div><section class="sec"><h2>You may also like</h2><div class="grid" style="margin-top:20px">${products.filter((item) => item.id !== product.id).slice(0, 4).map(productCard).join('')}</div></section></div>`;
+  const specsEntries = product.specs && typeof product.specs === 'object' ? Object.entries(product.specs) : [];
+
+  return `<div class="w pd-screen">
+    <div class="pd-nav-bar">
+      <button class="pd-back-btn" data-act="back" aria-label="Go back">
+        ${icon('back')}
+        <span>Back</span>
+      </button>
+      <div class="bc">
+        <a href="#/" data-act="home">Home</a>
+        <span>/</span>
+        <a href="#/" data-act="category" data-value="${escapeHTML(product.category)}">${escapeHTML(product.category)}</a>
+        <span>/</span>
+        <span class="bc-curr">${escapeHTML(product.name)}</span>
+      </div>
+    </div>
+
+    <div class="pd">
+      <div class="pm">
+        <img src="${productImage(product)}" alt="${escapeHTML(product.name)}">
+      </div>
+      <div class="pd-info">
+        <div class="pd-badges">
+          <span class="pd-badge">${escapeHTML(product.category)}</span>
+          <span class="pd-badge-brand">${escapeHTML(product.brand)}</span>
+          <span class="pd-badge-cod">Cash on Delivery</span>
+        </div>
+        <h1>${escapeHTML(product.name)}</h1>
+        <div class="big">
+          <b>${currency(product.price)}</b>
+        </div>
+        <p class="lb">Official Brand: ${brand}</p>
+        ${product.description ? `<p class="pd-desc">${escapeHTML(product.description)}</p>` : ''}
+        <div class="row">
+          <div class="q">
+            <button data-act="quantity-down" aria-label="Less">${icon('minus')}</button>
+            <em>${state.quantity}</em>
+            <button data-act="quantity-up" aria-label="More">${icon('plus')}</button>
+          </div>
+          <button class="cta" data-act="add-quantity" data-id="${escapeHTML(product.id)}">${icon('bag')}Add to cart</button>
+          <button class="cta ghost" data-act="favorite" data-id="${escapeHTML(product.id)}">${icon('heart', saved)}${saved ? 'Saved' : 'Save'}</button>
+        </div>
+      </div>
+    </div>
+
+    ${specsEntries.length ? `
+    <section class="sec pd-specs-sec">
+      <h2>Technical Specifications</h2>
+      <div class="specs-grid">
+        ${specsEntries.map(([k, v]) => `
+          <div class="spec-card">
+            <span class="spec-key">${escapeHTML(k)}</span>
+            <strong class="spec-val">${escapeHTML(String(v))}</strong>
+          </div>
+        `).join('')}
+      </div>
+    </section>
+    ` : ''}
+
+    <section class="sec">
+      <h2>You may also like</h2>
+      <div class="grid" style="margin-top:20px">${products.filter((item) => item.id !== product.id && item.category === product.category).concat(products.filter((item) => item.id !== product.id && item.category !== product.category)).slice(0, 4).map(productCard).join('')}</div>
+    </section>
+  </div>`;
 }
 function drawerView() {
   const lines = cartLines();
@@ -321,7 +385,9 @@ async function loadProducts() {
         || typeof data.brand !== 'string' || !data.brand.trim()
         || typeof data.category !== 'string' || !data.category.trim()
         || !Number.isFinite(price) || price <= 0) return null;
-      return { id, name: data.name.trim(), brand: data.brand.trim(), category: data.category.trim(), price };
+      const description = typeof data.description === 'string' ? data.description.trim() : '';
+      const specs = data.specs && typeof data.specs === 'object' ? data.specs : null;
+      return { id, name: data.name.trim(), brand: data.brand.trim(), category: data.category.trim(), price, description, specs };
     }).filter(Boolean).sort((a, b) => Number(a.id) - Number(b.id));
     state.catalogState = products.length ? 'ready' : 'empty';
     if (!products.length) state.catalogMessage = 'The catalog has no valid products yet.';
@@ -460,8 +526,17 @@ document.addEventListener('click', async (event) => {
     if (location.hash && location.hash !== '#/' && location.hash !== '#') location.hash = '#/';
     else render();
     toShop();
-  }
-  else if (act === 'retry') { void loadProducts(); }
+  } else if (act === 'view-product') {
+    if (!id) return;
+    go('#/product/' + id);
+  } else if (act === 'back') {
+    if (window.history.length > 1) {
+      window.history.back();
+    } else {
+      go('#/');
+      toShop();
+    }
+  } else if (act === 'retry') { void loadProducts(); }
   else if (act === 'favorite') {
     event.preventDefault();
     state.favorites = state.favorites.includes(id) ? state.favorites.filter((item) => item !== id) : [...state.favorites, id];

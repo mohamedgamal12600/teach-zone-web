@@ -368,11 +368,17 @@ h2 {
   display: flex;
   flex-direction: column;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .pc:hover {
   transform: translateY(-3px);
   box-shadow: 0 12px 24px rgba(0, 0, 0, 0.25);
+}
+
+.pc:active {
+  transform: scale(0.985);
 }
 
 .pi {
@@ -483,15 +489,162 @@ h2 {
   font-size: 15px;
 }
 
-/* Product Detail */
+/* Product Detail Screen */
+.pd-screen {
+  padding-bottom: 24px;
+}
+
+.pd-nav-bar {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 18px 0 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  margin-bottom: 20px;
+}
+
+.pd-back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--sf);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 999px;
+  padding: 8px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  transition: all 0.15s ease;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+.pd-back-btn:hover {
+  background: var(--ac);
+  color: var(--dk);
+  border-color: var(--ac);
+}
+
+.pd-back-btn:active {
+  transform: scale(0.96);
+}
+
+.pd-back-btn .ic {
+  width: 16px;
+  height: 16px;
+}
+
 .bc {
   font-size: 13px;
   color: var(--t2);
-  padding: 20px 0 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.bc a {
+  color: var(--t2);
+  transition: color 0.15s ease;
 }
 
 .bc a:hover {
+  color: var(--ac);
+}
+
+.bc-curr {
   color: #fff;
+  font-weight: 500;
+  max-width: 320px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pd-badges {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+
+.pd-badge,
+.pd-badge-brand,
+.pd-badge-cod {
+  display: inline-flex;
+  align-items: center;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 999px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.pd-badge {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--t2);
+}
+
+.pd-badge-brand {
+  background: rgba(253, 209, 75, 0.15);
+  color: var(--ac);
+}
+
+.pd-badge-cod {
+  background: rgba(46, 204, 113, 0.15);
+  color: #2ecc71;
+}
+
+.pd-desc {
+  color: var(--t2);
+  font-size: 14px;
+  line-height: 1.6;
+  margin: 14px 0 6px;
+  max-width: 65ch;
+}
+
+/* Specs Section */
+.pd-specs-sec {
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
+  padding: 28px 0;
+  margin-top: 20px;
+}
+
+.pd-specs-sec h2 {
+  font-size: 20px;
+  margin-bottom: 18px;
+}
+
+.specs-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 12px;
+}
+
+.spec-card {
+  background: var(--sf);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 14px;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.spec-key {
+  font-size: 11px;
+  color: var(--t2);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.spec-val {
+  font-size: 14px;
+  color: #fff;
+  font-weight: 600;
+  word-break: break-word;
 }
 
 .pd {
@@ -1260,6 +1413,48 @@ aside.on {
   }
 
   /* Product Details Page on Phone */
+  .pd-nav-bar {
+    padding: 10px 0 8px;
+    margin-bottom: 12px;
+    gap: 10px;
+  }
+  .pd-back-btn {
+    padding: 6px 12px;
+    font-size: 12px;
+    min-height: 34px;
+  }
+  .bc {
+    font-size: 11px;
+    gap: 4px;
+  }
+  .bc-curr {
+    max-width: 150px;
+  }
+  .pd-desc {
+    font-size: 13px;
+    margin: 10px 0 4px;
+  }
+  .pd-specs-sec {
+    padding: 20px 0;
+  }
+  .pd-specs-sec h2 {
+    font-size: 18px;
+    margin-bottom: 14px;
+  }
+  .specs-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+  .spec-card {
+    padding: 10px 12px;
+    border-radius: 12px;
+  }
+  .spec-key {
+    font-size: 10px;
+  }
+  .spec-val {
+    font-size: 12px;
+  }
   .pd {
     gap: 18px;
     padding: 8px 0 28px;
