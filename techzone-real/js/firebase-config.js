@@ -1,10 +1,18 @@
-// Paste your Firebase WEB app config here (Project settings > Your apps > Web).
+// Add the public Firebase Web app config from Project settings > Your apps > Web.
+// Do not put service-account keys or other private credentials in this file.
 export const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_STORAGE_BUCKET",
-  messagingSenderId: "YOUR_SENDER_ID",
-  appId: "YOUR_APP_ID"
+  apiKey: 'AIzaSyDRUULU3QqbFfHcupuGa0I9UDNrCpqIhPo',
+  authDomain: 'teach-zone-adec7.firebaseapp.com',
+  databaseURL: 'https://teach-zone-adec7-default-rtdb.firebaseio.com',
+  projectId: 'teach-zone-adec7',
+  storageBucket: 'teach-zone-adec7.firebasestorage.app',
+  messagingSenderId: '395561619175',
+  appId: '1:395561619175:web:f064ccceac011ff37d5c42',
+  measurementId: 'G-DSKW1KV289',
 };
-export const configured = !firebaseConfig.apiKey.startsWith('YOUR');
+
+const requiredFields = ['apiKey', 'authDomain', 'projectId', 'messagingSenderId', 'appId'];
+export const configured = requiredFields.every((field) => {
+  const value = firebaseConfig[field];
+  return typeof value === 'string' && value.trim() !== '' && !value.startsWith('YOUR_');
+});

@@ -1,0 +1,21 @@
+# Firebase local state and debug logs
+.firebase/
+firebase-debug.log
+firestore-debug.log
+ui-debug.log
+*.log
+
+# Node dependencies and generated output
+node_modules/
+functions/node_modules/
+functions/lib/
+
+# Firebase Admin/service-account credentials — never commit these
+*serviceAccount*.json
+*-adminsdk-*.json
+service-account*.json
+
+# Local environment files
+.env
+.env.*
+!.env.example
