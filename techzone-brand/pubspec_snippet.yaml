@@ -1,0 +1,21 @@
+# 1) flutter pub add --dev flutter_launcher_icons flutter_native_splash
+# 2) add these blocks to pubspec.yaml (top level, not inside another block)
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: assets/icon/app_icon.png
+  adaptive_icon_background: "#333742"
+  adaptive_icon_foreground: assets/icon/app_icon_foreground.png
+  remove_alpha_ios: true
+
+flutter_native_splash:
+  color: "#333742"
+  image: assets/icon/splash_logo.png
+  android_12:
+    color: "#333742"
+    image: assets/icon/splash_logo.png
+
+# 3) under the existing `flutter:` block:
+#   assets:
+#     - assets/icon/
