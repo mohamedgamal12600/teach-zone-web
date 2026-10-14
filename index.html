@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>TechZone</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <header class="hd">
+    <div class="logo"><i class="ic f">⚡</i>TechZone</div>
+    <nav>
+      <a href="#/" class="nav-home">Home</a>
+      <a href="#/shop" class="nav-shop">Shop</a>
+      <a href="#/saved" class="nav-saved">Saved</a>
+    </nav>
+    <button class="cb" aria-label="Open cart" id="cartBtn">
+      <svg class="ic" viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4zM3 6h18M16 10a4 4 0 0 1-8 0"/></svg>
+      <span class="bd" id="cartCount">0</span>
+    </button>
+  </header>
+  <main class="w" id="app"></main>
+
+  <div class="ov" id="overlay" aria-hidden="true"></div>
+  <aside id="cartDrawer" aria-labelledby="cartTitle" aria-modal="true" role="dialog">
+    <div class="ah"><h2 id="cartTitle">Cart</h2><button class="ic" aria-label="Close cart" id="closeCart">✖</button></div>
+    <div class="al" id="cartItems"></div>
+    <div class="af">
+      <p class="pr"><b id="subtotal">EGP 0</b></p>
+      <button class="cta" id="checkoutBtn">Checkout</button>
+    </div>
+  </aside>
+
+  <div id="toast" role="status" aria-live="polite"></div>
+
+  <script src="js/app.js"></script>
+</body>
+</html>
